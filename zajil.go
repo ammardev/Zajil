@@ -15,10 +15,6 @@ func NewApplicationModel() Zajil {
 	return Zajil{
 		mode:     "normal",
 		urlInput: components.NewInput(10),
-		windowSize: tea.WindowSizeMsg{
-			Width:  4,
-			Height: 4,
-		},
 	}
 
 }
