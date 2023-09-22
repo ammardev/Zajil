@@ -1,25 +1,20 @@
 package main
 
 import (
-	"strings"
-
-	"github.com/charmbracelet/bubbles/textinput"
+	"github.com/ammardev/zajil/components"
 	tea "github.com/charmbracelet/bubbletea"
 )
 
 type Zajil struct {
 	mode       string
-	urlInput   textinput.Model
+	urlInput   components.Input
 	windowSize tea.WindowSizeMsg
 }
 
 func NewApplicationModel() Zajil {
-	urlInput := textinput.New()
-	urlInput.Prompt = ""
-
 	return Zajil{
 		mode:     "normal",
-		urlInput: urlInput,
+		urlInput: components.NewInput(10),
 		windowSize: tea.WindowSizeMsg{
 			Width:  4,
 			Height: 4,
@@ -38,7 +33,7 @@ func (zajil Zajil) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return zajil, zajil.processKeyboardInput(msg.(tea.KeyMsg))
 	case tea.WindowSizeMsg:
 		zajil.windowSize = msg.(tea.WindowSizeMsg)
-		zajil.urlInput.Width = zajil.windowSize.Width - 7
+        zajil.urlInput.Resize(zajil.windowSize.Width)
 		return zajil, nil
 	}
 
@@ -47,16 +42,12 @@ func (zajil Zajil) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 func (zajil Zajil) View() string {
 	view := ""
-	view += " ╭" + strings.Repeat("─", zajil.windowSize.Width-4) + "╮ \n"
-	view += " │ " + zajil.urlInput.View() + " │ \n"
-	view += " ╰" + strings.Repeat("─", zajil.windowSize.Width-4) + "╯ \n"
+    view = zajil.urlInput.Render()
 
 	return view
 }
 
 func (zajil *Zajil) processKeyboardInput(key tea.KeyMsg) tea.Cmd {
-	var cmd tea.Cmd
-
 	if zajil.mode == "normal" {
 		switch key.String() {
 		case "q", "esc":
@@ -73,8 +64,7 @@ func (zajil *Zajil) processKeyboardInput(key tea.KeyMsg) tea.Cmd {
 			zajil.urlInput.Blur()
 			return nil
 		default:
-			zajil.urlInput, cmd = zajil.urlInput.Update(key)
-            return cmd
+            return zajil.urlInput.Insert(key)
 		}
 	}
 
