@@ -28,5 +28,8 @@ func sendHttpRequest(zajil *Zajil) {
 
 
     res, _ := http.DefaultClient.Do(request)
+
+    http.DefaultClient.CloseIdleConnections()
+
     zajil.responseView.SetResponse(res, ttfb)
 }
