@@ -10,15 +10,15 @@ var (
     renderStyle lipgloss.Style
 )
 
-type RequestLineInput struct {
+type UrlInput struct {
     textinput.Model
     Width int
 }
 
-func NewInput(width int) RequestLineInput {
+func NewInput(width int) UrlInput {
     renderStyle = lipgloss.NewStyle().Width(width).Border(lipgloss.RoundedBorder())
 
-    input := RequestLineInput{
+    input := UrlInput{
         Model: textinput.New(),
     }
     input.Model.Prompt = ""
@@ -27,20 +27,20 @@ func NewInput(width int) RequestLineInput {
     return input
 }
 
-func (input *RequestLineInput) Insert(key tea.KeyMsg) tea.Cmd {
+func (input *UrlInput) Insert(key tea.KeyMsg) tea.Cmd {
     var cmd tea.Cmd
     input.Model, cmd = input.Model.Update(key)
 
     return cmd
 }
 
-func (input *RequestLineInput) Resize(width int) {
+func (input *UrlInput) Resize(width int) {
     input.Width = width
     input.Model.Width = width
     renderStyle.Width(width)
 }
 
-func (input RequestLineInput) Render() string {
+func (input UrlInput) Render() string {
     return renderStyle.Render(
         input.Model.View(),
     )
