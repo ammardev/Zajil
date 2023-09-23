@@ -1,6 +1,8 @@
 package components
 
 import (
+	"strings"
+
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
@@ -25,6 +27,16 @@ func NewInput(width int) UrlInput {
     input.Resize(width)
 
     return input
+}
+
+func (input UrlInput) GetUrl() string {
+    url := input.Model.Value()
+
+    if !strings.HasPrefix(url, "http") {
+        url = "http://" + url
+    }
+
+    return url
 }
 
 func (input *UrlInput) Insert(key tea.KeyMsg) tea.Cmd {

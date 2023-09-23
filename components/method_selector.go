@@ -27,6 +27,10 @@ func NewMethodSelector() MethodSelector {
     }
 }
 
+func (selector MethodSelector) GetMethod() string {
+    return methods[selector.selectedMethod]
+}
+
 func (selector *MethodSelector) NextMethod() {
     selector.selectedMethod++
 
@@ -44,5 +48,5 @@ func (selector *MethodSelector) PreviousMethod() {
 }
 
 func (selector MethodSelector) Render() string {
-    return style.Render(methods[selector.selectedMethod])
+    return style.Render(selector.GetMethod())
 }
