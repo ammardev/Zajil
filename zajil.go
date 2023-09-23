@@ -29,7 +29,7 @@ func NewApplicationModel() Zajil {
 }
 
 func (zajil Zajil) Init() tea.Cmd {
-	return tea.ClearScreen
+	return nil
 }
 
 func (zajil Zajil) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
