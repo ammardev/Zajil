@@ -75,6 +75,9 @@ func (zajil *Zajil) processKeyboardInput(key tea.KeyMsg) tea.Cmd {
 			zajil.mode = "url"
 			zajil.urlInput.Focus()
 			return nil
+        case "enter":
+            sendHttpRequest(zajil)
+            return nil
 		}
 	} else if zajil.mode == "url" {
 		switch key.Type {

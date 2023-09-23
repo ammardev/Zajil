@@ -1,8 +1,10 @@
 package components
 
 import (
+	"io"
+	"net/http"
+
 	"github.com/charmbracelet/bubbles/textinput"
-	//tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 )
 
@@ -10,7 +12,7 @@ type ResponseView struct {
     textinput.Model
     Width int
     style lipgloss.Style
-    response string
+    body string
 }
 var a lipgloss.Style
 
@@ -24,8 +26,9 @@ func NewResponseView(width int) ResponseView {
     return response
 }
 
-func (view *ResponseView) SetResponse(response string) {
-    view.response = response
+func (view *ResponseView) SetResponse(response http.Response) {
+    body, _ := io.ReadAll(response.Body)
+    view.body = string(body)
 }
 
 func (view *ResponseView) Resize(width, height int) {
@@ -35,6 +38,6 @@ func (view *ResponseView) Resize(width, height int) {
 
 func (view ResponseView) Render() string {
     return view.style.Render(
-        view.response,
+        view.body,
     )
 }
