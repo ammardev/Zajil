@@ -7,14 +7,14 @@ import (
 
 type Zajil struct {
 	mode       string
-	urlInput   components.Input
+	requestLineInput   components.RequestLineInput
 	windowSize tea.WindowSizeMsg
 }
 
 func NewApplicationModel() Zajil {
 	return Zajil{
 		mode:     "normal",
-		urlInput: components.NewInput(10),
+		requestLineInput: components.NewInput(10),
 	}
 
 }
@@ -29,7 +29,7 @@ func (zajil Zajil) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return zajil, zajil.processKeyboardInput(msg.(tea.KeyMsg))
 	case tea.WindowSizeMsg:
 		zajil.windowSize = msg.(tea.WindowSizeMsg)
-        zajil.urlInput.Resize(zajil.windowSize.Width)
+        zajil.requestLineInput.Resize(zajil.windowSize.Width)
 		return zajil, nil
 	}
 
@@ -37,10 +37,7 @@ func (zajil Zajil) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (zajil Zajil) View() string {
-	view := ""
-    view = zajil.urlInput.Render()
-
-	return view
+    return zajil.requestLineInput.Render()
 }
 
 func (zajil *Zajil) processKeyboardInput(key tea.KeyMsg) tea.Cmd {
@@ -48,19 +45,22 @@ func (zajil *Zajil) processKeyboardInput(key tea.KeyMsg) tea.Cmd {
 		switch key.String() {
 		case "q", "esc":
 			return tea.Quit
+        case "v", "V", "M", "m":
+            zajil.requestLineInput.SwitchMethod()
+            return nil
 		case "i", "I":
 			zajil.mode = "url"
-			zajil.urlInput.Focus()
+			zajil.requestLineInput.Focus()
 			return nil
 		}
 	} else if zajil.mode == "url" {
 		switch key.Type {
 		case tea.KeyEsc, tea.KeyCtrlC, tea.KeyEnter:
 			zajil.mode = "normal"
-			zajil.urlInput.Blur()
+			zajil.requestLineInput.Blur()
 			return nil
 		default:
-            return zajil.urlInput.Insert(key)
+            return zajil.requestLineInput.Insert(key)
 		}
 	}
 

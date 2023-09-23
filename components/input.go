@@ -7,38 +7,73 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 )
 
-type Input struct {
+var Methods []string
+
+type RequestLineInput struct {
     textinput.Model
     Width int
+    SelectedMethod int
 }
 
-func NewInput(width int) Input {
-    input := Input{
+func NewInput(width int) RequestLineInput {
+    Methods = []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"}
+
+    input := RequestLineInput{
         Model: textinput.New(),
     }
     input.Model.Prompt = ""
     input.Resize(width)
+    input.SelectedMethod = 0
 
     return input
 }
 
-func (input *Input) Insert(key tea.KeyMsg) tea.Cmd {
+func (input *RequestLineInput) Insert(key tea.KeyMsg) tea.Cmd {
     var cmd tea.Cmd
     input.Model, cmd = input.Model.Update(key)
 
     return cmd
 }
 
-func (input *Input) Resize(width int) {
+func (input *RequestLineInput) Resize(width int) {
     input.Width = width
-    input.Model.Width = width - 7
+    input.Model.Width = width - 6 - 12
 }
 
-func (input Input) Render() string {
-    view := ""
-	view += " ╭" + strings.Repeat("─", input.Width-4) + "╮ \n"
-	view += " │ " + input.Model.View() + " │ \n"
-	view += " ╰" + strings.Repeat("─", input.Width-4) + "╯ \n"
+func (input *RequestLineInput) SwitchMethod() {
+    input.SelectedMethod++
 
-    return view
+    if input.SelectedMethod == len(Methods) {
+        input.SelectedMethod = 0
+    }
+}
+
+func (input RequestLineInput) Render() string {
+    var builder strings.Builder
+
+    if (input.Width < 20) {
+        return ""
+    }
+
+    builder.WriteString(" ╭" )
+    builder.WriteString(strings.Repeat("─", 9))
+    builder.WriteString("╮")
+    builder.WriteString("╭" )
+    builder.WriteString(strings.Repeat("─", input.Width-3 - 12))
+    builder.WriteString("╮ \n")
+    builder.WriteString(" │ " )
+    builder.WriteString(Methods[input.SelectedMethod])
+    builder.WriteString(strings.Repeat(" ", 7 - len(Methods[input.SelectedMethod])))
+    builder.WriteString(" │")
+    builder.WriteString("│ " )
+    builder.WriteString(input.Model.View())
+    builder.WriteString( " │ \n")
+    builder.WriteString(" ╰")
+    builder.WriteString(strings.Repeat("─", 9))
+    builder.WriteString("╯")
+    builder.WriteString("╰")
+    builder.WriteString(strings.Repeat("─", input.Width-3-12))
+    builder.WriteString("╯ \n")
+
+    return builder.String()
 }
