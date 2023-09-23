@@ -3,6 +3,7 @@ package components
 import (
 	"strings"
 
+	"github.com/ammardev/zajil/style"
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 )
@@ -55,25 +56,9 @@ func (input RequestLineInput) Render() string {
         return ""
     }
 
-    builder.WriteString(" ╭" )
-    builder.WriteString(strings.Repeat("─", 9))
-    builder.WriteString("╮")
-    builder.WriteString("╭" )
-    builder.WriteString(strings.Repeat("─", input.Width-3 - 12))
-    builder.WriteString("╮ \n")
-    builder.WriteString(" │ " )
-    builder.WriteString(Methods[input.SelectedMethod])
-    builder.WriteString(strings.Repeat(" ", 7 - len(Methods[input.SelectedMethod])))
-    builder.WriteString(" │")
-    builder.WriteString("│ " )
-    builder.WriteString(input.Model.View())
-    builder.WriteString( " │ \n")
-    builder.WriteString(" ╰")
-    builder.WriteString(strings.Repeat("─", 9))
-    builder.WriteString("╯")
-    builder.WriteString("╰")
-    builder.WriteString(strings.Repeat("─", input.Width-3-12))
-    builder.WriteString("╯ \n")
+    m := Methods[input.SelectedMethod] + strings.Repeat(" ", 7 - len(Methods[input.SelectedMethod]))
+    style.WrapItemInBorder(&builder, m, 7, 1)
+    style.WrapItemInBorder(&builder, input.Model.View(), input.Model.Width+1, 1)
 
     return builder.String()
 }
