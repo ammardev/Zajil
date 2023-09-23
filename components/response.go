@@ -1,10 +1,13 @@
 package components
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
 
+	"github.com/alecthomas/chroma/quick"
 	"github.com/charmbracelet/bubbles/textinput"
 	"github.com/charmbracelet/lipgloss"
 )
@@ -47,9 +50,16 @@ func NewResponseView(width int) ResponseView {
 
 func (view *ResponseView) SetResponse(response *http.Response, ttfb int) {
     body, _ := io.ReadAll(response.Body)
-    view.body = string(body)
     view.status = response.StatusCode
     view.ttfb = ttfb
+
+    formattingBuffer := new(bytes.Buffer)
+    json.Indent(formattingBuffer, body, "", "    ")
+
+    highlightingBuffer := new(bytes.Buffer)
+    quick.Highlight(highlightingBuffer, formattingBuffer.String(), "json", "terminal256", "solarized-dark256")
+
+    view.body = highlightingBuffer.String()
 }
 
 func (view *ResponseView) Resize(width, height int) {
