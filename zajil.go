@@ -30,7 +30,7 @@ func (zajil Zajil) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.WindowSizeMsg:
 		zajil.windowSize = msg.(tea.WindowSizeMsg)
         zajil.requestLineInput.Resize(zajil.windowSize.Width)
-		return zajil, nil
+		return zajil, tea.ClearScreen
 	}
 
 	return zajil, nil

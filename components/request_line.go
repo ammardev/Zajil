@@ -38,7 +38,7 @@ func (input *RequestLineInput) Insert(key tea.KeyMsg) tea.Cmd {
 
 func (input *RequestLineInput) Resize(width int) {
     input.Width = width
-    input.Model.Width = width - 6 - 12
+    input.Model.Width = width - 12
 }
 
 func (input *RequestLineInput) SwitchMethod() {
