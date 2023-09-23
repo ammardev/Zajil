@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/ammardev/zajil/components"
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/lipgloss"
 )
 
 type Zajil struct {
@@ -11,7 +12,11 @@ type Zajil struct {
 	windowSize tea.WindowSizeMsg
 }
 
+var a lipgloss.Style
+
 func NewApplicationModel() Zajil {
+    a = lipgloss.NewStyle()
+
 	return Zajil{
 		mode:     "normal",
 		requestLineInput: components.NewInput(10),
@@ -37,7 +42,9 @@ func (zajil Zajil) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (zajil Zajil) View() string {
-    return zajil.requestLineInput.Render()
+    return a.Render(
+        zajil.requestLineInput.Render(),
+    )
 }
 
 func (zajil *Zajil) processKeyboardInput(key tea.KeyMsg) tea.Cmd {

@@ -3,12 +3,15 @@ package components
 import (
 	"strings"
 
-	"github.com/ammardev/zajil/style"
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/lipgloss"
 )
 
-var Methods []string
+var (
+    Methods []string
+    renderStyle lipgloss.Style
+)
 
 type RequestLineInput struct {
     textinput.Model
@@ -18,6 +21,8 @@ type RequestLineInput struct {
 
 func NewInput(width int) RequestLineInput {
     Methods = []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"}
+
+    renderStyle = lipgloss.NewStyle().Border(lipgloss.RoundedBorder())
 
     input := RequestLineInput{
         Model: textinput.New(),
@@ -56,9 +61,10 @@ func (input RequestLineInput) Render() string {
         return ""
     }
 
-    m := Methods[input.SelectedMethod] + strings.Repeat(" ", 7 - len(Methods[input.SelectedMethod]))
-    style.WrapItemInBorder(&builder, m, 7, 1)
-    style.WrapItemInBorder(&builder, input.Model.View(), input.Model.Width+1, 1)
+    builder.WriteString(Methods[input.SelectedMethod])
+    builder.WriteString(input.Model.View())
 
-    return style.CombineIntoOneLine(builder.String(), 2, 3)
+    return renderStyle.Render(
+        builder.String(),
+    )
 }
