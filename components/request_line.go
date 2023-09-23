@@ -60,5 +60,5 @@ func (input RequestLineInput) Render() string {
     style.WrapItemInBorder(&builder, m, 7, 1)
     style.WrapItemInBorder(&builder, input.Model.View(), input.Model.Width+1, 1)
 
-    return builder.String()
+    return style.CombineIntoOneLine(builder.String(), 2, 3)
 }
