@@ -9,6 +9,8 @@ import (
 
 	"github.com/alecthomas/chroma/quick"
 	"github.com/charmbracelet/bubbles/textinput"
+	"github.com/charmbracelet/bubbles/viewport"
+	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 )
 
@@ -22,10 +24,13 @@ type ResponseView struct {
     body string
     status int
     ttfb int
+    viewport viewport.Model
 }
 var a lipgloss.Style
 
 func NewResponseView(width int) ResponseView {
+    v := viewport.New(width, 5)
+
     response := ResponseView{
         Model: textinput.New(),
         style: lipgloss.NewStyle().Width(width).Border(lipgloss.RoundedBorder()),
@@ -42,6 +47,7 @@ func NewResponseView(width int) ResponseView {
         statusBarRightStyle: lipgloss.NewStyle().
             Width(width - 10).
             AlignHorizontal(lipgloss.Right),
+        viewport: v,
     }
     response.Model.Prompt = ""
 
@@ -54,20 +60,30 @@ func (view *ResponseView) SetResponse(response *http.Response, ttfb int) {
     view.ttfb = ttfb
 
     formattingBuffer := new(bytes.Buffer)
-    json.Indent(formattingBuffer, body, "", "    ")
+    json.Indent(formattingBuffer, body, "│ ", "\t")
 
     highlightingBuffer := new(bytes.Buffer)
     quick.Highlight(highlightingBuffer, formattingBuffer.String(), "json", "terminal256", "solarized-dark256")
 
-    view.body = highlightingBuffer.String()
+    view.viewport.SetContent("│ " + highlightingBuffer.String())
 }
 
 func (view *ResponseView) Resize(width, height int) {
     view.style.Width(width)
     view.style.Height(height)
 
+    view.viewport.Width = width
+    view.viewport.Height = height-2
+
     view.statusBarStyle.Width(width)
     view.statusBarRightStyle.Width(width-10)
+}
+
+func (view *ResponseView) HandleEvents(msg tea.Msg) tea.Cmd {
+    var cmd tea.Cmd
+    view.viewport, cmd = view.viewport.Update(msg)
+
+    return cmd
 }
 
 func (view ResponseView) Render() string {
@@ -81,6 +97,6 @@ func (view ResponseView) Render() string {
 
     return view.style.Render(
         statusBar,
-        view.body,
+        view.viewport.View(),
     )
 }

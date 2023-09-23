@@ -29,21 +29,26 @@ func NewApplicationModel() Zajil {
 }
 
 func (zajil Zajil) Init() tea.Cmd {
-	return nil
+	return tea.ClearScreen
 }
 
 func (zajil Zajil) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+    cmds := []tea.Cmd{}
+
 	switch msg.(type) {
 	case tea.KeyMsg:
-		return zajil, zajil.processKeyboardInput(msg.(tea.KeyMsg))
+        cmds = append(cmds, zajil.processKeyboardInput(msg.(tea.KeyMsg)))
 	case tea.WindowSizeMsg:
 		zajil.windowSize = msg.(tea.WindowSizeMsg)
         zajil.urlInput.Resize(zajil.windowSize.Width - 13)
         zajil.responseView.Resize(zajil.windowSize.Width - 2, zajil.windowSize.Height - 6)
-		return zajil, tea.ClearScreen
+
+        cmds = append(cmds, tea.ClearScreen)
 	}
 
-	return zajil, nil
+    cmds = append(cmds, zajil.responseView.HandleEvents(msg))
+
+	return zajil, tea.Batch(cmds...)
 }
 
 func (zajil Zajil) View() string {
