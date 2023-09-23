@@ -11,6 +11,7 @@ type Zajil struct {
 	urlInput   components.UrlInput
 	windowSize tea.WindowSizeMsg
     methodSelector components.MethodSelector
+    responseView components.ResponseView
 }
 
 var a lipgloss.Style
@@ -22,6 +23,7 @@ func NewApplicationModel() Zajil {
 		mode:     "normal",
 		urlInput: components.NewInput(10),
         methodSelector: components.NewMethodSelector(),
+        responseView: components.NewResponseView(10),
 	}
 
 }
@@ -37,6 +39,7 @@ func (zajil Zajil) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.WindowSizeMsg:
 		zajil.windowSize = msg.(tea.WindowSizeMsg)
         zajil.urlInput.Resize(zajil.windowSize.Width - 13)
+        zajil.responseView.Resize(zajil.windowSize.Width - 2, zajil.windowSize.Height - 6)
 		return zajil, tea.ClearScreen
 	}
 
@@ -45,10 +48,14 @@ func (zajil Zajil) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 func (zajil Zajil) View() string {
     return a.Render(
-        lipgloss.JoinHorizontal(
-            lipgloss.Center,
-            zajil.methodSelector.Render(),
-            zajil.urlInput.Render(),
+        lipgloss.JoinVertical(
+            lipgloss.Left,
+            lipgloss.JoinHorizontal(
+                lipgloss.Center,
+                zajil.methodSelector.Render(),
+                zajil.urlInput.Render(),
+            ),
+            zajil.responseView.Render(),
         ),
     )
 }
