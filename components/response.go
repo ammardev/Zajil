@@ -10,6 +10,7 @@ type ResponseView struct {
     textinput.Model
     Width int
     style lipgloss.Style
+    response string
 }
 var a lipgloss.Style
 
@@ -23,6 +24,10 @@ func NewResponseView(width int) ResponseView {
     return response
 }
 
+func (view *ResponseView) SetResponse(response string) {
+    view.response = response
+}
+
 func (view *ResponseView) Resize(width, height int) {
     view.style.Width(width)
     view.style.Height(height)
@@ -30,6 +35,6 @@ func (view *ResponseView) Resize(width, height int) {
 
 func (view ResponseView) Render() string {
     return view.style.Render(
-        "hello",
+        view.response,
     )
 }
