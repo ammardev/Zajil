@@ -1,35 +1,28 @@
 package components
 
 import (
-	"strings"
-
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 )
 
 var (
-    Methods []string
     renderStyle lipgloss.Style
 )
 
 type RequestLineInput struct {
     textinput.Model
     Width int
-    SelectedMethod int
 }
 
 func NewInput(width int) RequestLineInput {
-    Methods = []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"}
-
-    renderStyle = lipgloss.NewStyle().Border(lipgloss.RoundedBorder())
+    renderStyle = lipgloss.NewStyle().Width(width).Border(lipgloss.RoundedBorder())
 
     input := RequestLineInput{
         Model: textinput.New(),
     }
     input.Model.Prompt = ""
     input.Resize(width)
-    input.SelectedMethod = 0
 
     return input
 }
@@ -43,28 +36,12 @@ func (input *RequestLineInput) Insert(key tea.KeyMsg) tea.Cmd {
 
 func (input *RequestLineInput) Resize(width int) {
     input.Width = width
-    input.Model.Width = width - 12
-}
-
-func (input *RequestLineInput) SwitchMethod() {
-    input.SelectedMethod++
-
-    if input.SelectedMethod == len(Methods) {
-        input.SelectedMethod = 0
-    }
+    input.Model.Width = width
+    renderStyle.Width(width)
 }
 
 func (input RequestLineInput) Render() string {
-    var builder strings.Builder
-
-    if (input.Width < 20) {
-        return ""
-    }
-
-    builder.WriteString(Methods[input.SelectedMethod])
-    builder.WriteString(input.Model.View())
-
     return renderStyle.Render(
-        builder.String(),
+        input.Model.View(),
     )
 }

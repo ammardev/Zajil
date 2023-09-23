@@ -10,6 +10,7 @@ type Zajil struct {
 	mode       string
 	requestLineInput   components.RequestLineInput
 	windowSize tea.WindowSizeMsg
+    methodSelector components.MethodSelector
 }
 
 var a lipgloss.Style
@@ -20,6 +21,7 @@ func NewApplicationModel() Zajil {
 	return Zajil{
 		mode:     "normal",
 		requestLineInput: components.NewInput(10),
+        methodSelector: components.NewMethodSelector(),
 	}
 
 }
@@ -34,7 +36,7 @@ func (zajil Zajil) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return zajil, zajil.processKeyboardInput(msg.(tea.KeyMsg))
 	case tea.WindowSizeMsg:
 		zajil.windowSize = msg.(tea.WindowSizeMsg)
-        zajil.requestLineInput.Resize(zajil.windowSize.Width)
+        zajil.requestLineInput.Resize(zajil.windowSize.Width - 13)
 		return zajil, tea.ClearScreen
 	}
 
@@ -43,7 +45,11 @@ func (zajil Zajil) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 func (zajil Zajil) View() string {
     return a.Render(
-        zajil.requestLineInput.Render(),
+        lipgloss.JoinHorizontal(
+            lipgloss.Center,
+            zajil.methodSelector.Render(),
+            zajil.requestLineInput.Render(),
+        ),
     )
 }
 
@@ -52,8 +58,11 @@ func (zajil *Zajil) processKeyboardInput(key tea.KeyMsg) tea.Cmd {
 		switch key.String() {
 		case "q", "esc":
 			return tea.Quit
-        case "v", "V", "M", "m":
-            zajil.requestLineInput.SwitchMethod()
+        case "v", "m":
+            zajil.methodSelector.NextMethod()
+            return nil
+        case "V", "M":
+            zajil.methodSelector.PreviousMethod()
             return nil
 		case "i", "I":
 			zajil.mode = "url"
