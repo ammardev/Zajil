@@ -1,9 +1,13 @@
 package components
 
-import "github.com/charmbracelet/lipgloss"
+import (
+	"net/http"
+
+	"github.com/charmbracelet/lipgloss"
+)
 
 var (
-    methods = []string{"GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS"}
+    methods = []string{http.MethodGet, http.MethodPost, http.MethodPatch, http.MethodPut, http.MethodDelete, http.MethodOptions}
     style lipgloss.Style
 )
 
