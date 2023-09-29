@@ -70,10 +70,10 @@ func (view *ResponseView) SetResponse(response *http.Response, ttfb int) {
 
 func (view *ResponseView) Resize(width, height int) {
     view.style.Width(width)
-    view.style.Height(height)
+    view.style.Height(height-20)
 
     view.viewport.Width = width
-    view.viewport.Height = height-2
+    view.viewport.Height = height-2-20
 
     view.statusBarStyle.Width(width)
     view.statusBarRightStyle.Width(width-10)
