@@ -7,29 +7,28 @@ import (
 )
 
 func sendHttpRequest(zajil *Zajil) {
-    request, _ := http.NewRequest(
-        zajil.methodSelector.GetMethod(),
-        zajil.urlInput.GetUrl(),
-        nil,
-    )
+	request, _ := http.NewRequest(
+		zajil.methodSelector.GetMethod(),
+		zajil.urlInput.GetUrl(),
+		nil,
+	)
 
-    var startTime time.Time
-    var ttfb int
+	var startTime time.Time
+	var ttfb int
 
-    trace := &httptrace.ClientTrace{
-        DNSStart: func(httptrace.DNSStartInfo) { startTime = time.Now() },
+	trace := &httptrace.ClientTrace{
+		DNSStart: func(httptrace.DNSStartInfo) { startTime = time.Now() },
 
-        GotFirstResponseByte: func() {
-            ttfb = int(time.Since(startTime).Milliseconds())
-        },
-    }
+		GotFirstResponseByte: func() {
+			ttfb = int(time.Since(startTime).Milliseconds())
+		},
+	}
 
-    request = request.WithContext(httptrace.WithClientTrace(request.Context(), trace))
+	request = request.WithContext(httptrace.WithClientTrace(request.Context(), trace))
 
+	res, _ := http.DefaultClient.Do(request)
 
-    res, _ := http.DefaultClient.Do(request)
+	http.DefaultClient.CloseIdleConnections()
 
-    http.DefaultClient.CloseIdleConnections()
-
-    zajil.responseView.SetResponse(res, ttfb)
+	zajil.responseView.SetResponse(res, ttfb)
 }
