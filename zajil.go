@@ -13,19 +13,17 @@ type Zajil struct {
 	methodSelector components.MethodSelector
 	responseView   components.ResponseView
 	rc             components.RequestContents
+	style          lipgloss.Style
 }
 
-var a lipgloss.Style
-
 func NewApplicationModel() Zajil {
-	a = lipgloss.NewStyle()
-
 	return Zajil{
 		mode:           "normal",
 		urlInput:       components.NewInput(10),
 		methodSelector: components.NewMethodSelector(),
 		responseView:   components.NewResponseView(10),
 		rc:             components.NewRequestContents(10),
+		style:          lipgloss.NewStyle(),
 	}
 
 }
@@ -55,7 +53,7 @@ func (zajil Zajil) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (zajil Zajil) View() string {
-	return a.Render(
+	return zajil.style.Render(
 		lipgloss.JoinVertical(
 			lipgloss.Left,
 			lipgloss.JoinHorizontal(
