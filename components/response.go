@@ -40,8 +40,8 @@ func NewResponseView() ResponseView {
             Padding(0, 2, 0, 2).
             Border(lipgloss.RoundedBorder(), false, false, true, false),
         statusStyle: lipgloss.NewStyle().
+            Width(5).
             AlignHorizontal(lipgloss.Center).
-            Background(lipgloss.Color("42")).
             Foreground(lipgloss.Color("232")).
             Bold(true),
         statusBarRightStyle: lipgloss.NewStyle().
@@ -57,6 +57,17 @@ func (view *ResponseView) SetResponse(response *http.Response, ttfb int) {
     body, _ := io.ReadAll(response.Body)
     view.status = response.StatusCode
     view.ttfb = ttfb
+
+    switch (view.status / 100) {
+    case 2:
+        view.statusStyle.Background(lipgloss.Color("42"))
+    case 3:
+        view.statusStyle.Background(lipgloss.Color("202"))
+    case 4:
+        view.statusStyle.Background(lipgloss.Color("11"))
+    case 5:
+        view.statusStyle.Background(lipgloss.Color("9"))
+    }
 
     formattingBuffer := new(bytes.Buffer)
     json.Indent(formattingBuffer, body, "│ ", "\t")
