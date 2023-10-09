@@ -14,6 +14,8 @@ import (
 	"github.com/charmbracelet/lipgloss"
 )
 
+const responseViewStatusBarOuterHeight = 2
+
 type ResponseView struct {
     textinput.Model
     Width int
@@ -28,24 +30,21 @@ type ResponseView struct {
 }
 var a lipgloss.Style
 
-func NewResponseView(width int) ResponseView {
-    v := viewport.New(width, 5)
+func NewResponseView() ResponseView {
+    v := viewport.New(5, 5)
 
     response := ResponseView{
         Model: textinput.New(),
-        style: lipgloss.NewStyle().Width(width).Border(lipgloss.RoundedBorder()),
+        style: lipgloss.NewStyle().Border(lipgloss.RoundedBorder()),
         statusBarStyle: lipgloss.NewStyle().
-            Width(width).
             Padding(0, 2, 0, 2).
             Border(lipgloss.RoundedBorder(), false, false, true, false),
         statusStyle: lipgloss.NewStyle().
-            Width(5).
             AlignHorizontal(lipgloss.Center).
             Background(lipgloss.Color("42")).
             Foreground(lipgloss.Color("232")).
             Bold(true),
         statusBarRightStyle: lipgloss.NewStyle().
-            Width(width - 10).
             AlignHorizontal(lipgloss.Right),
         viewport: v,
     }
@@ -69,14 +68,14 @@ func (view *ResponseView) SetResponse(response *http.Response, ttfb int) {
 }
 
 func (view *ResponseView) Resize(width, height int) {
-    view.style.Width(width)
-    view.style.Height(height-20)
+    view.style.Width(width - borderPadding)
+    view.style.Height(height - borderPadding)
 
-    view.viewport.Width = width
-    view.viewport.Height = height-2-20
+    view.viewport.Width = width - borderPadding
+    view.viewport.Height = height - borderPadding - responseViewStatusBarOuterHeight
 
-    view.statusBarStyle.Width(width)
-    view.statusBarRightStyle.Width(width-10)
+    view.statusBarStyle.Width(width - borderPadding)
+    view.statusBarRightStyle.Width(width - borderPadding - 10)
 }
 
 func (view *ResponseView) HandleEvents(msg tea.Msg) tea.Cmd {

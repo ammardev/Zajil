@@ -11,16 +11,20 @@ var (
 )
 
 
+const methodSelectorInnerWidth = 9
+
 type MethodSelector struct {
     selectedMethod int
     style lipgloss.Style
+    Width int
 }
 
 func NewMethodSelector() MethodSelector {
     return MethodSelector{
         selectedMethod: 0,
+        Width: methodSelectorInnerWidth + borderPadding,
         style: lipgloss.NewStyle().
-            Width(9).
+            Width(methodSelectorInnerWidth).
             Height(1).
             AlignHorizontal(lipgloss.Center).
             Border(lipgloss.RoundedBorder()),

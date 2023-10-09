@@ -6,6 +6,8 @@ import (
 	"github.com/charmbracelet/lipgloss"
 )
 
+const requestContentsTabViewOuterHeight = 3
+
 type RequestContents struct {
     width int
     style lipgloss.Style
@@ -15,7 +17,7 @@ type RequestContents struct {
     tabContentStyle lipgloss.Style
 }
 
-func NewRequestContents(width int) RequestContents {
+func NewRequestContents() RequestContents {
     activeTabBorder := lipgloss.Border{
 		Top:         "─",
 		Bottom:      " ",
@@ -39,23 +41,27 @@ func NewRequestContents(width int) RequestContents {
     }
 
     return RequestContents{
-        style: lipgloss.NewStyle().Width(width),
+        style: lipgloss.NewStyle().Bold(false),
         activeTabStyle: lipgloss.NewStyle().Border(activeTabBorder),
         tabStyle: lipgloss.NewStyle().Border(tabBorder),
         tabGapStyle: lipgloss.NewStyle().Border(lipgloss.RoundedBorder(), false, false, true, false),
-        tabContentStyle: lipgloss.NewStyle().Width(width).Height(18).Border(lipgloss.RoundedBorder()),
+        tabContentStyle: lipgloss.NewStyle().Border(lipgloss.RoundedBorder()),
     }
 }
 
-func (rc *RequestContents) Resize(width int) {
+func (rc *RequestContents) Resize(width, height int) {
     rc.style.Width(width)
-    rc.tabContentStyle.Width(width-2)
+    rc.style.Height(height)
+
+    rc.tabContentStyle.Width(width - borderPadding)
+    rc.tabContentStyle.Height(height - borderPadding - requestContentsTabViewOuterHeight)
 }
 
 func (rc RequestContents) Render() string {
     if rc.style.GetWidth() - 30 < 0 {
         return ""
     }
+
     return rc.style.Render(
         lipgloss.JoinHorizontal(
             lipgloss.Center,

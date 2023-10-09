@@ -11,22 +11,23 @@ import (
 const (
     borderPadding = 2
     inputPromptPadding = 1
+    urlInputInnerHeight = 1
 )
 
 type UrlInput struct {
     textinput.Model
     Width int
+    Height int
     style lipgloss.Style
 }
 
-func NewInput(width int) UrlInput {
+func NewInput() UrlInput {
     input := UrlInput{
         Model: textinput.New(),
-        Width: width,
-        style: lipgloss.NewStyle().Width(width - borderPadding).Height(1).Border(lipgloss.RoundedBorder()),
+        Height: urlInputInnerHeight + borderPadding,
+        style: lipgloss.NewStyle().Border(lipgloss.RoundedBorder()),
     }
     input.Model.Prompt = ""
-    input.Resize(width)
 
     return input
 }

@@ -11,21 +11,22 @@ type Zajil struct {
 	urlInput       components.UrlInput
 	windowSize     tea.WindowSizeMsg
 	methodSelector components.MethodSelector
-	responseView   components.ResponseView
 	rc             components.RequestContents
+	responseView   components.ResponseView
 	style          lipgloss.Style
 }
 
 func NewApplicationModel() Zajil {
-	return Zajil{
+	zajil := Zajil{
 		mode:           "normal",
 		methodSelector: components.NewMethodSelector(),
-		urlInput:       components.NewInput(10),
-		responseView:   components.NewResponseView(10),
-		rc:             components.NewRequestContents(10),
+		urlInput:       components.NewInput(),
+		rc:             components.NewRequestContents(),
+		responseView:   components.NewResponseView(),
 		style:          lipgloss.NewStyle(),
 	}
 
+	return zajil
 }
 
 func (zajil Zajil) Init() tea.Cmd {
@@ -40,9 +41,9 @@ func (zajil Zajil) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		cmds = append(cmds, zajil.processKeyboardInput(msg.(tea.KeyMsg)))
 	case tea.WindowSizeMsg:
 		zajil.windowSize = msg.(tea.WindowSizeMsg)
-		zajil.urlInput.Resize(zajil.windowSize.Width - 13)
-		zajil.responseView.Resize(zajil.windowSize.Width-2, zajil.windowSize.Height-9)
-		zajil.rc.Resize(zajil.windowSize.Width)
+		zajil.urlInput.Resize(zajil.windowSize.Width - zajil.methodSelector.Width)
+		zajil.rc.Resize(zajil.windowSize.Width, (zajil.windowSize.Height-zajil.urlInput.Height)/2)
+		zajil.responseView.Resize(zajil.windowSize.Width, (zajil.windowSize.Height-zajil.urlInput.Height)/2)
 
 		cmds = append(cmds, tea.ClearScreen)
 	}
