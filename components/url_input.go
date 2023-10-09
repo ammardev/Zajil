@@ -8,20 +8,22 @@ import (
 	"github.com/charmbracelet/lipgloss"
 )
 
-var (
-    renderStyle lipgloss.Style
+const (
+    borderPadding = 2
+    inputPromptPadding = 1
 )
 
 type UrlInput struct {
     textinput.Model
     Width int
+    style lipgloss.Style
 }
 
 func NewInput(width int) UrlInput {
-    renderStyle = lipgloss.NewStyle().Width(width).Border(lipgloss.RoundedBorder())
-
     input := UrlInput{
         Model: textinput.New(),
+        Width: width,
+        style: lipgloss.NewStyle().Width(width - borderPadding).Height(1).Border(lipgloss.RoundedBorder()),
     }
     input.Model.Prompt = ""
     input.Resize(width)
@@ -48,12 +50,12 @@ func (input *UrlInput) Insert(key tea.KeyMsg) tea.Cmd {
 
 func (input *UrlInput) Resize(width int) {
     input.Width = width
-    input.Model.Width = width
-    renderStyle.Width(width)
+    input.Model.Width = width - borderPadding - inputPromptPadding
+    input.style.Width(width - borderPadding)
 }
 
 func (input UrlInput) Render() string {
-    return renderStyle.Render(
+    return input.style.Render(
         input.Model.View(),
     )
 }

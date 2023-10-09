@@ -19,8 +19,8 @@ type Zajil struct {
 func NewApplicationModel() Zajil {
 	return Zajil{
 		mode:           "normal",
-		urlInput:       components.NewInput(10),
 		methodSelector: components.NewMethodSelector(),
+		urlInput:       components.NewInput(10),
 		responseView:   components.NewResponseView(10),
 		rc:             components.NewRequestContents(10),
 		style:          lipgloss.NewStyle(),

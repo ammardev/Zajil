@@ -8,22 +8,23 @@ import (
 
 var (
     methods = []string{http.MethodGet, http.MethodPost, http.MethodPatch, http.MethodPut, http.MethodDelete, http.MethodOptions}
-    style lipgloss.Style
 )
 
 
 type MethodSelector struct {
     selectedMethod int
+    style lipgloss.Style
 }
 
 func NewMethodSelector() MethodSelector {
-    style = lipgloss.NewStyle().
-        Width(9).
-        AlignHorizontal(lipgloss.Center).
-        Border(lipgloss.RoundedBorder())
-
     return MethodSelector{
         selectedMethod: 0,
+        style: lipgloss.NewStyle().
+            Width(9).
+            Height(1).
+            AlignHorizontal(lipgloss.Center).
+            Border(lipgloss.RoundedBorder()),
+
     }
 }
 
@@ -48,5 +49,5 @@ func (selector *MethodSelector) PreviousMethod() {
 }
 
 func (selector MethodSelector) Render() string {
-    return style.Render(selector.GetMethod())
+    return selector.style.Render(selector.GetMethod())
 }
