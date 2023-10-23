@@ -3,6 +3,7 @@ package components
 import (
 	"strings"
 
+	"github.com/charmbracelet/bubbles/textarea"
 	"github.com/charmbracelet/lipgloss"
 )
 
@@ -15,6 +16,7 @@ type RequestContents struct {
     tabStyle lipgloss.Style
     tabGapStyle lipgloss.Style
     tabContentStyle lipgloss.Style
+    HeadersTextInput textarea.Model
 }
 
 func NewRequestContents() RequestContents {
@@ -46,6 +48,7 @@ func NewRequestContents() RequestContents {
         tabStyle: lipgloss.NewStyle().Border(tabBorder),
         tabGapStyle: lipgloss.NewStyle().Border(lipgloss.RoundedBorder(), false, false, true, false),
         tabContentStyle: lipgloss.NewStyle().Border(lipgloss.RoundedBorder()),
+        HeadersTextInput: textarea.New(),
     }
 }
 
@@ -69,6 +72,8 @@ func (rc RequestContents) Render() string {
             rc.tabStyle.Render(" Body (B) "),
             rc.tabGapStyle.Render(strings.Repeat(" ", rc.style.GetWidth() - 28)),
         ),
-        rc.tabContentStyle.Render("Authorization: Bearer 123\nContent-Type: application/json\nAccept: application/json"),
+        rc.tabContentStyle.Render(
+            rc.HeadersTextInput.View(),
+        ),
     )
 }
