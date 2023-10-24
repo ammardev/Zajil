@@ -3,6 +3,7 @@ package main
 import (
 	"net/http"
 	"net/http/httptrace"
+	"strings"
 	"time"
 )
 
@@ -12,6 +13,8 @@ func sendHttpRequest(zajil *Zajil) {
 		zajil.urlInput.GetUrl(),
 		nil,
 	)
+
+	parseHeaders(request, zajil.rc.HeadersTextInput.Value())
 
 	var startTime time.Time
 	var ttfb int
@@ -31,4 +34,19 @@ func sendHttpRequest(zajil *Zajil) {
 	http.DefaultClient.CloseIdleConnections()
 
 	zajil.responseView.SetResponse(res, ttfb)
+}
+
+func parseHeaders(request *http.Request, headersBlock string) {
+	// TODO: Add real parsing here.
+
+	rawHeadersList := strings.Split(headersBlock, "\n")
+
+	for _, rawHeader := range rawHeadersList {
+		if rawHeader == "" {
+			continue
+		}
+
+		keyValueSplit := strings.Split(rawHeader, ":")
+		request.Header.Add(keyValueSplit[0], keyValueSplit[1])
+	}
 }
