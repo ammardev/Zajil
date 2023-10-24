@@ -85,7 +85,10 @@ func (zajil *Zajil) processKeyboardInput(key tea.KeyMsg) tea.Cmd {
 			return nil
 		case "H":
 			zajil.mode = "header"
-			zajil.rc.HeadersTextInput.Focus()
+			zajil.rc.ActivateTab(0)
+		case "B":
+			zajil.mode = "body"
+			zajil.rc.ActivateTab(1)
 		case "enter":
 			sendHttpRequest(zajil)
 			return nil
@@ -108,6 +111,17 @@ func (zajil *Zajil) processKeyboardInput(key tea.KeyMsg) tea.Cmd {
 		default:
 			var cmd tea.Cmd
 			zajil.rc.HeadersTextInput, cmd = zajil.rc.HeadersTextInput.Update(key)
+			return cmd
+		}
+	} else if zajil.mode == "body" {
+		switch key.Type {
+		case tea.KeyEsc, tea.KeyCtrlC:
+			zajil.mode = "normal"
+			zajil.rc.BodyTextInput.Blur()
+			return nil
+		default:
+			var cmd tea.Cmd
+			zajil.rc.BodyTextInput, cmd = zajil.rc.BodyTextInput.Update(key)
 			return cmd
 		}
 	}

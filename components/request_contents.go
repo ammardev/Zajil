@@ -17,6 +17,8 @@ type RequestContents struct {
     tabGapStyle lipgloss.Style
     tabContentStyle lipgloss.Style
     HeadersTextInput textarea.Model
+    BodyTextInput textarea.Model
+    activeTab int
 }
 
 func NewRequestContents() RequestContents {
@@ -49,6 +51,8 @@ func NewRequestContents() RequestContents {
         tabGapStyle: lipgloss.NewStyle().Border(lipgloss.RoundedBorder(), false, false, true, false),
         tabContentStyle: lipgloss.NewStyle().Border(lipgloss.RoundedBorder()),
         HeadersTextInput: textarea.New(),
+        BodyTextInput: textarea.New(),
+        activeTab: 0,
     }
 }
 
@@ -60,9 +64,26 @@ func (rc *RequestContents) Resize(width, height int) {
     rc.tabContentStyle.Height(height - borderPadding - requestContentsTabViewOuterHeight)
 }
 
+// TODO: fix this ugly code
+func (rc *RequestContents) ActivateTab(tabIndex int) {
+    rc.activeTab = tabIndex
+    if tabIndex == 0 {
+        rc.HeadersTextInput.Focus()
+    } else {
+        rc.BodyTextInput.Focus()
+    }
+}
+
 func (rc RequestContents) Render() string {
     if rc.style.GetWidth() - 30 < 0 {
         return ""
+    }
+
+    activeView := ""
+    if rc.activeTab == 0 {
+        activeView = rc.HeadersTextInput.View()
+    } else {
+        activeView = rc.BodyTextInput.View()
     }
 
     return rc.style.Render(
@@ -73,7 +94,7 @@ func (rc RequestContents) Render() string {
             rc.tabGapStyle.Render(strings.Repeat(" ", rc.style.GetWidth() - 28)),
         ),
         rc.tabContentStyle.Render(
-            rc.HeadersTextInput.View(),
+            activeView,
         ),
     )
 }
