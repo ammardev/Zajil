@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"net/http"
 	"net/http/httptrace"
 	"strings"
@@ -11,7 +12,7 @@ func sendHttpRequest(zajil *Zajil) {
 	request, _ := http.NewRequest(
 		zajil.methodSelector.GetMethod(),
 		zajil.urlInput.GetUrl(),
-		nil,
+		bytes.NewReader([]byte(zajil.rc.BodyTextInput.Value())),
 	)
 
 	parseHeaders(request, zajil.rc.HeadersTextInput.Value())
