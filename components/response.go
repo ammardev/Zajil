@@ -25,6 +25,7 @@ type ResponseView struct {
     statusStyle lipgloss.Style
     body string
     status int
+    statusMessage string
     ttfb int
     viewport viewport.Model
 }
@@ -57,6 +58,7 @@ func (view *ResponseView) SetResponse(response *http.Response, ttfb int) {
     body, _ := io.ReadAll(response.Body)
     view.status = response.StatusCode
     view.ttfb = ttfb
+    view.statusMessage = response.Status[4:]
 
     switch (view.status / 100) {
     case 2:
@@ -76,6 +78,8 @@ func (view *ResponseView) SetResponse(response *http.Response, ttfb int) {
     quick.Highlight(highlightingBuffer, formattingBuffer.String(), "json", "terminal256", "solarized-dark256")
 
     view.viewport.SetContent("│ " + highlightingBuffer.String())
+
+    view.Resize(view.style.GetWidth() + borderPadding, view.style.GetHeight() + borderPadding)
 }
 
 func (view *ResponseView) Resize(width, height int) {
@@ -86,7 +90,7 @@ func (view *ResponseView) Resize(width, height int) {
     view.viewport.Height = height - borderPadding - responseViewStatusBarOuterHeight
 
     view.statusBarStyle.Width(width - borderPadding)
-    view.statusBarRightStyle.Width(width - borderPadding - 10)
+    view.statusBarRightStyle.Width(width - borderPadding - view.statusStyle.GetWidth() - 6 - len(view.statusMessage))
 }
 
 func (view *ResponseView) HandleEvents(msg tea.Msg) tea.Cmd {
@@ -101,6 +105,7 @@ func (view ResponseView) Render() string {
     if view.status > 0 {
         statusBar = view.statusBarStyle.Render(
             view.statusStyle.Render(fmt.Sprint(view.status)),
+            view.statusMessage,
             view.statusBarRightStyle.Render(fmt.Sprint("TTFB: ", view.ttfb, "ms")),
         )
     }
