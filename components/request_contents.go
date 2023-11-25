@@ -79,18 +79,23 @@ func (rc RequestContents) Render() string {
         return ""
     }
 
+    headerTab := rc.tabStyle
+    bodyTab := rc.tabStyle
+
     activeView := ""
     if rc.activeTab == 0 {
         activeView = rc.HeadersTextInput.View()
+        headerTab = rc.activeTabStyle
     } else {
         activeView = rc.BodyTextInput.View()
+        bodyTab = rc.activeTabStyle
     }
 
     return rc.style.Render(
         lipgloss.JoinHorizontal(
             lipgloss.Center,
-            rc.activeTabStyle.Render(" Headers (H) "),
-            rc.tabStyle.Render(" Body (B) "),
+            headerTab.Render(" Headers (H) "),
+            bodyTab.Render(" Body (B) "),
             rc.tabGapStyle.Render(strings.Repeat(" ", rc.style.GetWidth() - 28)),
         ),
         rc.tabContentStyle.Render(
